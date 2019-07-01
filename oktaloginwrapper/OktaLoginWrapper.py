@@ -25,7 +25,7 @@ class OktaSession(object):
         """__init__ method.
 
         Args:
-            organization (str): okta instance name (<organization>.okta.com).
+            organization (str): okta instance name (<organization>.okta-emea.com).
         """
         self.organization = str(organization).lower()
         self.okta_session = requests.session()
@@ -55,7 +55,7 @@ class OktaSession(object):
             factor_type = 'question'
         if passCode:
             factor_type = 'token'
-        url_authn = 'https://{}.okta.com/api/v1/authn'.format(self.organization)
+        url_authn = 'https://{}.okta-emea.com/api/v1/authn'.format(self.organization)
         payload_authn = json.dumps({
             "username": username,
             "password": password,
@@ -97,7 +97,7 @@ class OktaSession(object):
         Returns:
             The Okta session is updated with the required cookies for future connection.
         """
-        url_push = "https://{}.okta.com/api/v1/authn/factors/{}/verify".format(self.organization, auth_params['factor_id'])
+        url_push = "https://{}.okta-emea.com/api/v1/authn/factors/{}/verify".format(self.organization, auth_params['factor_id'])
         response = self.okta_session.post(url_push, data=json.dumps(auth_params))
         mfa_state = json.loads(response.text).get('status')
 
@@ -137,14 +137,14 @@ class OktaSession(object):
         return "You are now logged in."
 
     def _cookie_brewer(self):
-        cookie_brewer_url = 'https://{0}.okta.com/login/sessionCookieRedirect?checkAccountSetupComplete=true&token={1}&redirectUrl=https%3A%2F%2F{0}.okta.com%2Fuser%2Fnotifications'.format(self.organization, self._session_token)
+        cookie_brewer_url = 'https://{0}.okta-emea.com/login/sessionCookieRedirect?checkAccountSetupComplete=true&token={1}&redirectUrl=https%3A%2F%2F{0}.okta-emea.com%2Fuser%2Fnotifications'.format(self.organization, self._session_token)
         self.okta_session.get(url=cookie_brewer_url)
 
     def app_list(self):
         """Return a list of apps assigned to the logged in user."""
-        appslist_url = "https://{}.okta.com/api/v1/users/{}/appLinks/".format(self.organization, self._user_id)
+        appslist_url = "https://{}.okta-emea.com/api/v1/users/{}/appLinks/".format(self.organization, self._user_id)
         appslist_headers = {
-            "Host": "{}.okta.com".format(self.organization),
+            "Host": "{}.okta-emea.com".format(self.organization),
             "Connection": "keep-alive",
             "Upgrade-Insecure-Requests": "1",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
@@ -172,7 +172,7 @@ class OktaSession(object):
             "RelayState": "",
         }
         headers_saml = {
-            'origin': "https://{}.okta.com".format(self.organization),
+            'origin': "https://{}.okta-emea.com".format(self.organization),
             'upgrade-insecure-requests': "1",
             'content-type': "application/x-www-form-urlencoded",
             'accept': "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
@@ -195,7 +195,7 @@ class OktaSession(object):
 
 if __name__ == '__main__':
 
-    my_session = OktaSession(input('Please type your organization name (<organization>.okta.com): '))
+    my_session = OktaSession(input('Please type your organization name (<organization>.okta-emea.com): '))
     my_session.okta_auth(
         username=input('Type in your Okta username: '),
         password=getpass('Okta password: '),
